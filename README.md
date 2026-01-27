@@ -26,9 +26,9 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
 #### Process
-- [Data cleaning](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L31-L176)
+- [Data cleaning](https://github.com/mishahoskins/test_pages/blob/a1e8a7fc68a200455d94ce5a453e7d7bb1b87162/Measles_metrics_25_26.R#L32-L176)
 - [Figures and Map(s)](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L180-L261)
-- [Markdown Generation](https://github.com/mishahoskins/test_pages/blob/measles/measles_markdown.Rmd)
+- [Markdown Generation](https://github.com/mishahoskins/test_pages/blob/a1e8a7fc68a200455d94ce5a453e7d7bb1b87162/measles_markdown.Rmd#L1-L27)
 
 Development of internal metrics for the state of North Carolina to facilitate data processes from interviews conducted with exposed individuals using **R**. This was driven by the need for evaluating unstructured survey data and presenting internal outputs characterizing the scope of measles exposure in North Carolina from December 2025 through early 2026. All data included here is simulated and _does not_ reflect real world counts or figures. I created an HTML output using **R Markdown** for ease of transfer, including full script. 
 
