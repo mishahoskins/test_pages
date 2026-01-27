@@ -78,7 +78,7 @@ working_redcap_2$int_date <- ymd(working_redcap_2$int_date)
 # 
 
 # SAS SQL but in R for everyone
-response_calcs <- working_redcap_3 |>
+response_calcs <- working_redcap_2 |>
     mutate(
         today_date = today(),
         
