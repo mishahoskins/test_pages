@@ -11,16 +11,16 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Education
 
-- Dr.PH., Social and Behavioral Sciences, Tulane University (_May 2025_) |
-- MPH., Epidemiology, The University of North Carolina at Charlotte (_May 2022_) |
-- B.A., International Studies, North Carolina State University (_May 2013_) |
-  - Spanish Language, International Relations Field Study, Universidad Nacional, Costa Rica (_June 2012_) |
+- Dr.PH., Social and Behavioral Sciences, Tulane University (_May 2025_) 
+- MPH., Epidemiology, The University of North Carolina at Charlotte (_May 2022_) 
+- B.A., International Studies, North Carolina State University (_May 2013_) 
+  - Spanish Language, International Relations Field Study, Universidad Nacional, Costa Rica (_June 2012_) 
 
 ## Work Experience
 
-- Senior Epidemiologist | Healthcare Data Scientist CDC Foundation (North Carolina) | Jun 2024 – Present
+- Senior Epidemiologist Healthcare Data Scientist CDC Foundation (North Carolina) | Jun 2024 – Present
 - Population Health Analyst III (Claims & Predictive Analytics) North Carolina Department of Health Benefits | Jan 2024 – Jun 2024
-- Epidemiologist | Applied Data Science & Population Health Analytics CDC Foundation (North Carolina) | Nov 2021 – Jan 2024
+- Epidemiologist Applied Data Science & Population Health Analytics CDC Foundation (North Carolina) | Nov 2021 – Jan 2024
 - Epidemiologist NC Department of Health & Human Services | May 2019 – Nov 2021
 
 ## Projects
