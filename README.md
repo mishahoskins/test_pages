@@ -1,10 +1,10 @@
-# Data Science Introduction
+# _Data Science Introduction_
 ### Contact
 Mikhail Hoskins
 
 (919) 357-5145 | mishahoskins@gmail.com | mhoskins@tulane.edu 
 
-www.linkedin.com/in/mikhail-hoskins | https://github.com/mishahoskins
+[LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
 ### Professional Summary
 Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Proven record translating complex health data into actionable insights at scale.
