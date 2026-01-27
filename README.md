@@ -1,13 +1,13 @@
 # _Data Science Introduction_
-## Contact
-Mikhail Hoskins
 
+Mikhail Hoskins
+## Contact
 (919) 357-5145 | mishahoskins@gmail.com | mhoskins@tulane.edu 
 
 [LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
 ## Professional Summary
-Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Proven record translating complex health data into actionable insights at scale.
+Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Unstructered and semistructured data --> usable analysis.
 
 ## Education
 
@@ -18,13 +18,10 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Work Experience
 
-Senior Epidemiologist | Healthcare Data Scientist CDC Foundation (North Carolina) | Jun 2024 – Present
-
-Population Health Analyst III (Claims & Predictive Analytics) North Carolina Department of Health Benefits | Jan 2024 – Jun 2024
-
-Epidemiologist | Applied Data Science & Population Health Analytics CDC Foundation (North Carolina) | Nov 2021 – Jan 2024
-
-Epidemiologist NC Department of Health & Human Services | May 2019 – Nov 2021
+- Senior Epidemiologist | Healthcare Data Scientist CDC Foundation (North Carolina) | Jun 2024 – Present
+- Population Health Analyst III (Claims & Predictive Analytics) North Carolina Department of Health Benefits | Jan 2024 – Jun 2024
+- Epidemiologist | Applied Data Science & Population Health Analytics CDC Foundation (North Carolina) | Nov 2021 – Jan 2024
+- Epidemiologist NC Department of Health & Human Services | May 2019 – Nov 2021
 
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
