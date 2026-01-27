@@ -7,7 +7,7 @@ Mikhail Hoskins
 [LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
 ## Professional Summary
-Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Unstructered and semistructured data :arrow_right: usable analysis.
+Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Unstructered and semistructured data --> usable analysis.
 
 ## Education
 
@@ -25,6 +25,7 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
+[Measles output *all numbers simulated*](file:///C:/Data/Measles/Code/measles_markdown.html)
 Development of internal metrics for the state of North Carolina to facilitate data processes from interviews conducted with exposed individuals using **R**. This was driven by the need for evaluating unstructured survey data and presenting internal outputs characterizing the scope of measles exposure in North Carolina from December 2025 through early 2026. All data included here is simulated and _does not_ reflect real world counts or figures. I created an HTML output using **R Markdown** for ease of transfer, including full script. 
 ### EHR Engineering and Antibiogram Visualization of NHSN Unstructured Antibiotic Susceptibility Data
 Drug resistance poses an increasing threat to the range and power of current antibiotics and anti-fungal pharmaceutical interventions in the United States and globaly. Using semi-structured data I created a method to group treatment by class and susceptibility to visualize susceptibility trends in treatment options. By leveraging macros in **SAS**, I was able to quickly assess large swaths of treatments grouped by type (Penicillins, Cephalosporins, Macrolides, Tetracyclines, Fluoroquinolones, Aminoglycosides, and Carbapenems) and level of susceptibility (susceptible, intermediate, resistant). Extensive usage of **SQL** creates reproduciblity in **Python**  and **R** packages. 
