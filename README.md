@@ -1,25 +1,22 @@
 # _Data Science Introduction_
-### Contact
+## Contact
 Mikhail Hoskins
 
 (919) 357-5145 | mishahoskins@gmail.com | mhoskins@tulane.edu 
 
 [LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
-### Professional Summary
+## Professional Summary
 Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Proven record translating complex health data into actionable insights at scale.
 
-### Education
+## Education
 
-Tulane University – Aug 2022 – May 2025 Doctor of Public Health, Social and Behavioral Sciences, Cum laude
+- Dr.PH., Social and Behavioral Sciences | Tulane University (_May 2025_)
+- MPH., Epidemiology | The University of North Carolina at Charlotte (_May 2022_)
+- B.A., International Studies | North Carolina State University (_May 2013_)
+  - Spanish Language, International Relations Field Study | Universidad Nacional, Costa Rica (_June 2012_)
 
-UNC Charlotte – Aug 2018 – May 2020 Master of Public Health, Epidemiology Magna cum laude
-
-NC State University – Aug 2009 – May 2013 Bachelor of Arts, International Studies
-
-Universidad Nacional, Costa Rica – Dec 2012 – Jun 2012 Spanish Language, International Relations Field Study
-
-### Work Experience
+## Work Experience
 
 Senior Epidemiologist | Healthcare Data Scientist CDC Foundation (North Carolina) | Jun 2024 – Present
 
@@ -29,9 +26,17 @@ Epidemiologist | Applied Data Science & Population Health Analytics CDC Foundati
 
 Epidemiologist NC Department of Health & Human Services | May 2019 – Nov 2021
 
-### Projects
+## Projects
+### North Carolina Measles Response Pipleline (_all values simulated_)
+Development of internal metrics for the state of North Carolina to facilitate data processes from interviews conducted with exposed individuals using **R**. This was driven by the need for evaluating unstructured survey data and presenting internal outputs characterizing the scope of measles exposure in North Carolina from December 2025 through early 2026. All data included here is simulated and _does not_ reflect real world counts or figures. 
+### EHR Engineering and Antibiogram Visualization of NHSN Unstructured Antibiotic Susceptibility Data
+Drug resistance poses an increasing threat to the range and power of current antibiotics and anti-fungal pharmaceutical interventions in the United States and globaly. Using semi-structured data I created a method to group treatment by class and susceptibility to visualize susceptibility trends in treatment options. By leveraging macros in **SAS**, I was able to quickly assess large swaths of treatments grouped by type (Penicillins, Cephalosporins, Macrolides, Tetracyclines, Fluoroquinolones, Aminoglycosides, and Carbapenems) and level of susceptibility (susceptible, intermediate, resistant). Extensive usage of **SQL** creates reproduciblity in **Python**  and **R** packages. 
+### Group A Invasive Streptococcus (GAS) Test for Trend Increase North Carolina 2018-2024
+Group A invasive Streptococcus has [increased in the United States](https://ncconnect-my.sharepoint.com/personal/mikhail_hoskins_dhhs_nc_gov/Documents/Microsoft%20Teams%20Chat%20Files/jama_gregory_2025_oi_250004_1743516783.03422.pdf) since the mid-2000's. To assess whether this trend was beyond what an expected increase may explain, I created a model to assess whether the increased trend is beyond the expected level of increase. By leveraging a combination of tests including Cochran-Armitage Trend Test and Mann-Kendall Test depending on specific linear and non-linear increases among risk factor cohorts, I was able to create trends to evaluate if specific groups may be seeing an increase beyond expected values. 
+### Multidrug Resistant Organism Standardized Infection Ratio Sample Model
+### Simulated Cancer Relational Data Evaluation
 
-### Publications
+## Publications
 - [Health Care-Associated Infections in North Carolina, 2024](https://www.dph.ncdhhs.gov/epidemiology/communicable-disease/2024annualreportfinalpdf/open)
 - [Health Care-Associated Infections in North Carolina, 2023](https://www.dph.ncdhhs.gov/epidemiology/communicable-disease/2023-hai-annual-report/open)
 - [Application of a life table approach to assess duration of BNT162b2 vaccine-derived immunity by age using COVID-19 case surveillance data during the Omicron variant period](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0291678)
