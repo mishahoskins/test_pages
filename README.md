@@ -2,7 +2,7 @@
 
 Mikhail Hoskins
 ## Contact
-:iphone: (919) 357-5145 | :envelope: mishahoskins@gmail.com ; mhoskins@tulane.edu 
+ (919) 357-5145 | mishahoskins@gmail.com ; mhoskins@tulane.edu 
 
 [LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
@@ -11,10 +11,10 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Education
 
-- Dr.PH., Social and Behavioral Sciences | Tulane University (_May 2025_)
-- MPH., Epidemiology | The University of North Carolina at Charlotte (_May 2022_)
-- B.A., International Studies | North Carolina State University (_May 2013_)
-  - Spanish Language, International Relations Field Study | Universidad Nacional, Costa Rica (_June 2012_)
+- Dr.PH., Social and Behavioral Sciences, Tulane University (_May 2025_) |
+- MPH., Epidemiology, The University of North Carolina at Charlotte (_May 2022_) |
+- B.A., International Studies, North Carolina State University (_May 2013_) |
+  - Spanish Language, International Relations Field Study, Universidad Nacional, Costa Rica (_June 2012_) |
 
 ## Work Experience
 
