@@ -1,5 +1,5 @@
 # Data Science Introduction
-###Contact
+### Contact
 Mikhail Hoskins
 
 (919) 357-5145 | mishahoskins@gmail.com | mhoskins@tulane.edu www.linkedin.com/in/mikhail-hoskins | https://github.com/mishahoskins | Raleigh, NC
