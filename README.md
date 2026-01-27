@@ -2,12 +2,12 @@
 
 Mikhail Hoskins
 ## Contact
-(919) 357-5145 | mishahoskins@gmail.com | mhoskins@tulane.edu 
+:iphone: (919) 357-5145 | :envelope: mishahoskins@gmail.com ; mhoskins@tulane.edu 
 
 [LinkedIn](https://www.linkedin.com/in/mikhail-hoskins/) | [GitHub](https://github.com/mishahoskins)
 
 ## Professional Summary
-Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Unstructered and semistructured data --> usable analysis.
+Healthcare data scientist and infectious disease epidemiologist with 6+ years of experience designing analytics solutions across EHR, claims, and surveillance data. Specialized in statistical modeling, risk stratification, and production ETL pipelines to support clinical, operational, and policy decisions. Unstructered and semistructured data :arrow_right: usable analysis.
 
 ## Education
 
