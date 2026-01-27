@@ -1,0 +1,26 @@
+---
+title: "Measles Response 25-26 *New*"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+source("Measles_metrics_25_26.R")
+```
+
+## Contract Tracing Tables
+
+```{r tables, echo=FALSE}
+
+county_sumstats
+state_sumstats
+
+```
+
+## Statewide Plot
+
+```{r pressure, echo=FALSE}
+county_heatmap
+```
+
