@@ -26,7 +26,7 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
 #### Process
-- [Data cleaning](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L37-L176)
+- [Data cleaning](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L31-L176)
 - [Figures and Map(s)](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L180-L261)
 - [Markdown Generation](https://github.com/mishahoskins/test_pages/blob/measles/measles_markdown.Rmd)
 
