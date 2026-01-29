@@ -3,44 +3,41 @@
 # Edits:        
 # Date Created:  01/19/2026
 # Date Modified: 01/22/2026
-# Description:   Contact tracing metrics from RedCap, confines to variables we need and produces summary stats by RESPONSE county NO PHI IN THIS DATASET/SCRIPT. 
+# Description:   Contact tracing metrics from RedCap, confines to variables we need and produces summary stats by RESPONSE county. 
 #                Daily cadence. Pull data ~11:00am 
 #
 # Inputs:       All_Models_Identified_Cases_and_Contacts_Line_List_by_Event_Create_Date_DATESTAMP.xls
 #               
 # Output:       measles_metrics_raw_R
-# Notes:        Use extract with LABELS, ex: THISISDATAWITH_**LABELS**.csv
+# Notes:        Use extract with LABELS, ex: StatewideMeaslesResp_DATA_LABELS_2026-01-19_1535.csv
 #               Ease of use fix: Updated pathways 01/22/2026 to group df's into a list and point to output paths and single .xlsx export. 
 #
 #               Annotations are at # (between /* in SAS) to help guide.
 
-#onetime installs
-tinytex::install_tinytex(force = TRUE)
+# #onetime installs
+# tinytex::install_tinytex(force = TRUE)
 
 # load libraries
 pacman::p_load(dplyr, tidyr, rvest, lubridate, rio, skimr, sqldf, gtsummary, openxlsx, ggplot2, kableExtra, knitr, biostats, tigris, stringr)
 
-
 # set working directory (if you haven't already) and output path
-setwd("C:/Data/Measles/Data")
-contacttracing <- paste0("C:/Data/Measles" , Sys.Date(), ".xlsx")
+setwd("T:/VPDs/Measles/Cases, Clusters, and Outbreaks/Dec 2025 - Jan 2026 Outbreak")
+contacttracing <- paste0("./Outputs/contract_tracing_linelist_internal_dashboard_" , Sys.Date(), ".xlsx")
 
 
 # Read in data
     # Import from NCEDSS delete excess headers and save as CSV
 # reading in case info
-working_redcap <- read.csv( "./StatewideMeaslesResp_DATA_LABELS_2026-01-27_1507.csv") # Update file name here 
-
-
+working_redcap <- read.csv( "./Data/StatewideMeaslesResp_DATA_LABELS_2026-01-28_1607.csv", check.names=FALSE) # Update file name here 
 
 # Confine to only what we need
 working_redcap_2 <- working_redcap |> 
-    select(Record.ID, This.field.will.display..Yes..if.the.contact.answered.Yes.to.having.an.MMR.record, Is.the.contact.considered.immune., Is.contact.lost.to.follow.up.,
-           Calculate.most.recent.exposure.date, Quarantine.start.date, Calculated.quarantine.end.date.., Specify.Response, Repeat.Instrument, Data.Access.Group, Is.quarantine.needed., Monitoring.Need, 
-           Call.outcome, Call.outcome.1, Call.outcome.2, Call.outcome.3, Call.outcome.4, Record.Status.., Complete., Date.of.interview) |> 
+    select(X...Record.ID, This.field.will.display..Yes..if.the.contact.answered.Yes.to.having.an.MMR.record, Is.the.contact.considered.immune., Is.contact.lost.to.follow.up.,
+           Calculate.most.recent.exposure.date, Quarantine.start.date, Calculated.quarantine.end.date, Specify.Response, Repeat.Instrument, Data.Access.Group, Is.quarantine.needed., Monitoring.Need, 
+           Call.outcome, Call.outcome.1, Home.County.., Call.outcome.2, Call.outcome.3, Call.outcome.4, Record.Status..., Complete., Date.of.interview) |> 
     
             filter(Repeat.Instrument %in% c(""))
-
+head(working_redcap, n=10)
 # 
 # mutate(across(
 #         where(is.character),
@@ -60,22 +57,23 @@ working_redcap_2 <- working_redcap_2 |>
            quarantine = Is.quarantine.needed.,
            specify_response = Specify.Response,
            calc_monitor_need = Monitoring.Need,
-           record_status = Record.Status..,
-           quar_end = Calculated.quarantine.end.date..,
+           record_status = Record.Status...,
+           quar_end = Calculated.quarantine.end.date,
            status = Complete.,
-           int_date = Date.of.interview)
+           int_date = Date.of.interview,
+           home_county = Home.County..,
+           Record.ID = X...Record.ID)
 
-# Dates. ugh.
-working_redcap_2$calc_recent_exposure_date <- ymd(working_redcap_2$calc_recent_exposure_date)
-working_redcap_2$quar_end <- ymd(working_redcap_2$quar_end)
-working_redcap_2$int_date <- ymd(working_redcap_2$int_date)
+# Dates. ugh. <-- This literally switches every time. Is it mdy or ymd, double check every day.
+working_redcap_2$calc_recent_exposure_date <- mdy(working_redcap_2$calc_recent_exposure_date)
+working_redcap_2$quar_end <- mdy(working_redcap_2$quar_end)
+working_redcap_2$int_date <- mdy(working_redcap_2$int_date)
 
 # 
-# #        sniff test for variables if necessary:
+# #        sniff test for variables if neccessary:
 #             
 #         class(working_redcap$Calculated.quarantine.end.date)
 #         levels(working_redcap_2$Calculated.quarantine.end.date)
-# 
 
 # SAS SQL but in R for everyone
 response_calcs <- working_redcap_2 |>
@@ -92,8 +90,7 @@ response_calcs <- working_redcap_2 |>
             specify_response == 'Rutherford County contact investigation January 8, 2026' ~ 'Rutherford',
             specify_response == 'Cabarrus County contact investigation January 8, 2026' ~ 'Cabarrus',
             specify_response == 'Polk County contact investigation December 31, 2025' ~ 'Polk',
-            specify_response == 'Mecklenburg County contact investigation January 22, 2026' ~ 'Mecklenburg',
-            
+            specify_response =='Mecklenburg County contact investigation January 22, 2026' ~ 'Mecklenburg',
             Record.ID == '469' ~ 'Polk',
             Record.ID == '470' ~ 'Buncombe',
             TRUE ~ ''),
@@ -114,7 +111,7 @@ response_calcs <- working_redcap_2 |>
         # Responding county
         mutate(response_county_1 = na_if(response_county_1, ""),
                 Data.Access.Group   = na_if(Data.Access.Group, ""),
-                responding_county = coalesce(response_county_1, Data.Access.Group ),
+                responding_county = coalesce(response_county_1, Data.Access.Group),
                 
         
         # Polk vs polk... can be use for future misspellings too
@@ -159,6 +156,7 @@ response_calcs <- working_redcap_2 |>
             week_int,
             Data.Access.Group,
             specify_response,
+            
             interview_stat_new,
             text_mmr,
             immunity,
@@ -202,94 +200,78 @@ state_sumstats <- linelist_final |>
                      curr_active_mon ~ "Currently in active monitoring"))
 
 # print sum stats (column %'s)
-county_sumstats
-state_sumstats
+print(county_sumstats)
+print(state_sumstats)
 
 # Make a list for a single export
 combine_metrics <- list("linelist" = linelist_final, "county" = county_sumstats, "state" = state_sumstats)
 
-
-#Map:
+# Map:
 
 #Step 1: Count cases per county
 county_counts <- linelist_final |>
-    mutate(county = str_to_title(str_trim(Data.Access.Group))) |> 
-    count(county, name = "n_obs")
+  mutate(county = str_to_title(str_trim(Data.Access.Group))) |>
+  count(county, name = "n_obs")
 
-# Had this in a prior map, don't know why, kept it.
+# Had this in a prior map, don't know why, kept it. (explaination here: https://cran.r-project.org/web/packages/tigris/refman/tigris.html, didn't read it)
 options(tigris_use_cache = TRUE)
 
 #Step 2: Get counties from TIGRIS package
 nc_counties <- counties(
-    state = "NC",
-    cb = TRUE,     
-    year = 2023) |>
-    mutate(
+  state = "NC",
+  cb = TRUE,
+  year = 2023) |>
+  mutate(
     county = str_to_title(NAME))
 
 
-#Step 3: Merge and make NAs 0
+#Step 3: Merge and make NAs 0, R and NA's vs 0 vs BLANK is annoying
 nc_map_data <- nc_counties |>
-    left_join(county_counts, by = "county") |> mutate(n_obs = replace_na(n_obs, 0))
+  left_join(county_counts, by = "county") |> mutate(n_obs = replace_na(n_obs, 0))
 
-#Step 4: Heat map white for zero then darkish blue for highest counts. borders are black, text color is red
-county_heatmap <- ggplot(nc_map_data) + geom_sf(aes(fill = n_obs), color = "black", linewidth = 0.2) +
-  
+contacts_label <- paste0("Number of known exposed contacts by county ", Sys.Date())
+#Step 4: Heat map white for zero then darkish blue for highest counts. borders are black, text color is red, bold, and 4.5 font
+contacts_heatmap <- ggplot(nc_map_data) + geom_sf(aes(fill = n_obs), color = "black", linewidth = 0.2) +
+
   geom_sf_text(
     data = dplyr::filter(nc_map_data, n_obs > 0),
     aes(label = n_obs),
     color = "red",
     size = 4.5,
     fontface = "bold") +
-  
+
   scale_fill_gradient(
     low  = "white",
-    high = "#1f4e79",   # same matte blue you used earlier
+    high = "#1f4e79",   # matte blue
     name = "Contacts") +
 
   theme_minimal() +
-  
+
   theme(panel.grid = element_blank(),
-    axis.text = element_blank(),
-    axis.title = element_blank(),
-    legend.position = "none") + #No legend, we can add it back in but for now we just want to see the county breakdown
-  
-  labs(title = "Number of known exposed contacts by county",
-    subtitle = "North Carolina")
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "none") + #No legend, we can add it back in but for now we just want to see the county breakdown
+
+  labs(title = contacts_label,
+       subtitle = "North Carolina")
 
 #Print heatmap
-county_heatmap
+contacts_heatmap
 
 
-#Workaround, output not working, no idea how this works pulled it from stack and some data science website
-
-wb <- createWorkbook()
-
-# Sheet 1: linelist
-addWorksheet(wb, "linelist")
-writeData(wb, "linelist", combine_metrics$linelist)
-
-# Sheet 2: county metrics (extract table)
-addWorksheet(wb, "county")
-writeData(wb, "county", as_tibble(combine_metrics$county))
-
-# Sheet 3: state metrics (extract table)
-addWorksheet(wb, "state")
-writeData(wb, "state", as_tibble(combine_metrics$state))
-
-saveWorkbook(wb, contacttracing, overwrite = TRUE)
+# send to Outputs folder 
+write.xlsx(x = combine_metrics, file = contacttracing)
 
 # fin
 
 # 
-# # Other frequency tables replace select() with what you want to see for data checks, validation, curiosity, etc.
+# # # Other frequency tables replace select() with what you want to see for data checks, validation, curiosity, etc.
 # sumstats_freqs <- working_redcap_2 |>
-#     
-#     select(Data.Access.Group, specify_response, status) |>
+# 
+#     select(home_county) |>
 #     tbl_summary()
 # 
 # sumstats_freqs
 # 
-
 
 
