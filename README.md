@@ -1,4 +1,6 @@
 # _Data Science Introduction_
+## Coming soon -- see messier examples [here](https://github.com/mishahoskins/Portfolio/tree/main)
+
 
 Mikhail Hoskins
 ## Contact
@@ -25,7 +27,6 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
-**Code Highlight**: [Trends and maps, easy to read](https://github.com/mishahoskins/test_pages/blob/40a4408ff78b2d9a15bf42e62f0143601c48e7ef/measles_public_dashboard_cleaning.R), [Example (simulated numbers)](https://github.com/mishahoskins/test_pages/blob/40a4408ff78b2d9a15bf42e62f0143601c48e7ef/measles_markdown_files/figure-gfm/pressure-1.png)
 
 Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
 
