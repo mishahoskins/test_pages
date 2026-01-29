@@ -51,7 +51,7 @@ Created a transferable regression modeling framework to assess whether observed 
 
 **Tech stack:** SQL, SAS, Microsoft SQL Server
 
-**Methods:**regression modeling
+**Methods:** Regression modeling
 
 ### Simulated Cancer Relational Data Evaluation
 
