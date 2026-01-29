@@ -28,28 +28,35 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 **Code Highlight**: [Trends and maps, easy to read](https://github.com/mishahoskins/test_pages/blob/40a4408ff78b2d9a15bf42e62f0143601c48e7ef/measles_public_dashboard_cleaning.R), [Example (simulated numbers)](https://github.com/mishahoskins/test_pages/blob/40a4408ff78b2d9a15bf42e62f0143601c48e7ef/measles_markdown_files/figure-gfm/pressure-1.png)
 
 Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
+
 **Tech stack:** R, R Markdown
 
 ### EHR Engineering and Antibiogram Visualization of NHSN Unstructured Antibiotic Susceptibility Data
 
 Developed a structured data workflow using unstructured data to analyze antimicrobial resistance by grouping treatments by drug class and susceptibility. Implemented  processing using **SAS** macros and **SQL**, with reproducible outputs designed for downstream analysis in **R** and **Python**.
+
 **Tech stack:** R, SQL, SAS, Microsoft SQL Server
 
 ### Group A Invasive Streptococcus (GAS) Test for Trend Increase North Carolina 2018-2024
 
 Built statistical models to assess whether increases in invasive Group A Streptococcus incidence exceeded expected trends across risk-factor cohorts. Leveraged Cochran–Armitage and Mann–Kendall tests for linear and non-linear trend detection, using **MSSQL**, **SAS**, and **R** to process and analyze large-scale unstructured EHR data.
+
 **Tech stack:** R, SQL, SAS, Microsoft SQL Server
-Methods: Trend analysis, regression modeling, cohort analysis
+
+**Methods:** Trend analysis, regression modeling, cohort analysis
 
 ### Multidrug Resistant Organism Standardized Infection Ratio Sample Model
 
 Created a transferable regression modeling framework to assess whether observed health events exceed expected levels based on population demographics. The model, informed by CDC methods and implemented using **SQL**, was applied to simulated carbapenem-resistant Enterobacteriaceae data for statewide risk scoring.
+
 **Tech stack:** SQL, SAS, Microsoft SQL Server
-Methods:regression modeling
+
+**Methods:**regression modeling
 
 ### Simulated Cancer Relational Data Evaluation
 
 Developed a reproducible end-to-end analysis using sample healthcare data to evaluate cancer incidence, staging, and treatment timelines. Implemented relational joins, analysis, and visualization in **R**, with outputs delivered via **R Markdown**.
+
 **Tech stack:** R, SQL, Python, R Markdown
 
 ## Publications
