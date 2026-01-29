@@ -25,28 +25,32 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Projects
 ### North Carolina Measles Response Pipleline (_all values simulated_)
-#### Process
-- [Data cleaning](https://github.com/mishahoskins/test_pages/blob/a1e8a7fc68a200455d94ce5a453e7d7bb1b87162/Measles_metrics_25_26.R#L32-L176)
-- [Figures and Map(s)](https://github.com/mishahoskins/test_pages/blob/measles/Measles_metrics_25_26.R#L180-L261)
-- [Markdown Generation](https://github.com/mishahoskins/test_pages/blob/a1e8a7fc68a200455d94ce5a453e7d7bb1b87162/measles_markdown.Rmd#L1-L27)
+**Code Highlight**: [Trends and maps, easy to read](https://github.com/mishahoskins/test_pages/blob/40a4408ff78b2d9a15bf42e62f0143601c48e7ef/measles_public_dashboard_cleaning.R)
 
-Development of internal metrics for the state of North Carolina to facilitate data processes from interviews conducted with exposed individuals using **R**. This was driven by the need for evaluating unstructured survey data and presenting internal outputs characterizing the scope of measles exposure in North Carolina from December 2025 through early 2026. All data included here is simulated and _does not_ reflect real world counts or figures. I created an HTML output using **R Markdown** for ease of transfer, including full script. 
+Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
+**Tech stack:** R, R Markdown
 
 ### EHR Engineering and Antibiogram Visualization of NHSN Unstructured Antibiotic Susceptibility Data
 
-Drug resistance poses an increasing threat to the range and power of current antibiotics and anti-fungal pharmaceutical interventions in the United States and globaly. Using semi-structured data I created a method to group treatment by class and susceptibility to visualize susceptibility trends in treatment options. By leveraging macros in **SAS**, I was able to quickly assess large swaths of treatments grouped by type (Penicillins, Cephalosporins, Macrolides, Tetracyclines, Fluoroquinolones, Aminoglycosides, and Carbapenems) and level of susceptibility (susceptible, intermediate, resistant). Extensive usage of **SQL** creates reproduciblity in **Python**  and **R** packages. 
+Developed a structured data workflow using unstructured data to analyze antimicrobial resistance by grouping treatments by drug class and susceptibility. Implemented  processing using **SAS** macros and **SQL**, with reproducible outputs designed for downstream analysis in **R** and **Python**.
+**Tech stack:** R, SQL, SAS, Microsoft SQL Server
 
 ### Group A Invasive Streptococcus (GAS) Test for Trend Increase North Carolina 2018-2024
 
-Group A invasive Streptococcus has [increased in the United States](https://ncconnect-my.sharepoint.com/personal/mikhail_hoskins_dhhs_nc_gov/Documents/Microsoft%20Teams%20Chat%20Files/jama_gregory_2025_oi_250004_1743516783.03422.pdf) since the mid-2000's. To assess whether this trend was beyond what an expected increase may explain, I created a model to assess whether the increased trend is beyond the expected level of increase. By leveraging a combination of tests including Cochran-Armitage Trend Test and Mann-Kendall Test depending on specific linear and non-linear increases among risk factor cohorts, I was able to create trends to evaluate if specific groups may be seeing an increase beyond expected values. Unstructured EHR data was extracted and transformed using **SQL** and **SAS** with analysis and vizualization performed in **SAS** and **R**. Because of the cohort risk factor size, I utilized **Microsoft SQL Server** and leveraged **MSSQL** to pass initial extraction through the server. 
+Built statistical models to assess whether increases in invasive Group A Streptococcus incidence exceeded expected trends across risk-factor cohorts. Leveraged Cochran–Armitage and Mann–Kendall tests for linear and non-linear trend detection, using **MSSQL**, **SAS**, and **R** to process and analyze large-scale unstructured EHR data.
+**Tech stack:** R, SQL, SAS, Microsoft SQL Server
+Methods: Trend analysis, regression modeling, cohort analysis
 
 ### Multidrug Resistant Organism Standardized Infection Ratio Sample Model
 
-The Centers for Disease Control and Prevention (CDC) utilizes a [logistic regression model](https://www.cdc.gov/nhsn/pdfs/ps-analysis-resources/nhsn-sir-guide.pdf) (and negative binomial model) to assess the likelihood of an event. Using this model as a basis, I created, from scratch, a regression model that scores the probablility of an event in each individual in North Carolina. For this project, I used Carbapenem resistant enterobacteriaceae as my event and scored each simulation individual based on population characteristics mapped to state population proportions. The objective is to create a scaleable and transferable model to quickly determine if any event is occuring more than we would expect based on our known demographic trends. Using **SQL** allows for inter-programibility. 
+Created a transferable regression modeling framework to assess whether observed health events exceed expected levels based on population demographics. The model, informed by CDC methods and implemented using **SQL**, was applied to simulated carbapenem-resistant Enterobacteriaceae data for statewide risk scoring.
+**Tech stack:** SQL, SAS, Microsoft SQL Server
+Methods:regression modeling
 
 ### Simulated Cancer Relational Data Evaluation
 
-Using sample data, I created a relational database (combining treatment, patient demographics, and diagnosis files) to evaluate trends in cancer type, stage, diagnosis date, and treatment date using **R** for cleaning, analysis, and vizualization. To facilitate ease of interpretation, I created an **R Markdown** output with full code for full clarity.
+Developed a reproducible end-to-end analysis using sample healthcare data to evaluate cancer incidence, staging, and treatment timelines. Implemented relational joins, analysis, and visualization in **R**, with outputs delivered via **R Markdown**.
+**Tech stack:** R, SQL, Python, R Markdown
 
 ## Publications
 - [Health Care-Associated Infections in North Carolina, 2024](https://www.dph.ncdhhs.gov/epidemiology/communicable-disease/2024annualreportfinalpdf/open)
