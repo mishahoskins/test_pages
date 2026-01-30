@@ -1,5 +1,5 @@
 # _Data Science Introduction_
-## Coming soon -- see messier examples [here](https://github.com/mishahoskins/Portfolio/tree/main)
+## Work in progress -- full codes [here](https://github.com/mishahoskins/Portfolio/tree/main)
 
 
 Mikhail Hoskins
