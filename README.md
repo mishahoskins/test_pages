@@ -26,7 +26,16 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 - Epidemiologist NC Department of Health & Human Services | May 2019 – Nov 2021
 
 ## Projects
+### North Carolina Medicare Prescribing Practices 2018-2023
+Code highlight: [Data cleaning & prep](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Medicare_ptD_analysis_new.sas) | [Visualization](https://github.com/mishahoskins/test_pages/blob/3644ba59410818e8c0c58df6b502ccca7ad18cba/Medicare_ptD_tables_29JAN26.pdf)
+Created a transferable quantile regression model to assess prescribing practices across presriber types and locations in North Carolina from semi structured Medicare data. The model, building and adding to prior publications and implemented using **SQL**, expands on the existing body of work.  
+
+**Tech stack:** SQL, SAS
+
+**Methods:** Quantile regression modeling, risk modeling
+
 ### North Carolina Measles Response Pipleline (_all values simulated_)
+Code highlight: [Mapping](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Measles_metrics_25_26.R)
 
 Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
 
@@ -39,6 +48,7 @@ Developed a structured data workflow using unstructured data to analyze antimicr
 **Tech stack:** R, SQL, SAS, Microsoft SQL Server
 
 ### Group A Invasive Streptococcus (GAS) Test for Trend Increase North Carolina 2018-2024
+Code highlight: [Analysis and Vizualization](https://github.com/mishahoskins/Portfolio/blob/0d305fefeacdd6ec86f1fed76b56e589960ac659/GAS_MK%20analysis.R)
 
 Built statistical models to assess whether increases in invasive Group A Streptococcus incidence exceeded expected trends across risk-factor cohorts. Leveraged Cochran–Armitage and Mann–Kendall tests for linear and non-linear trend detection, using **MSSQL**, **SAS**, and **R** to process and analyze large-scale unstructured EHR data.
 
@@ -47,6 +57,7 @@ Built statistical models to assess whether increases in invasive Group A Strepto
 **Methods:** Trend analysis, regression modeling, cohort analysis
 
 ### Multidrug Resistant Organism Standardized Infection Ratio Sample Model
+Code highlight: [Data prototype prep](https://github.com/mishahoskins/Portfolio/blob/b16a81dee01eac2ad50f2731199b11f071cbd694/MDRO_SIR_estimate.sas) 
 
 Created a transferable regression modeling framework to assess whether observed health events exceed expected levels based on population demographics. The model, informed by CDC methods and implemented using **SQL**, was applied to simulated carbapenem-resistant Enterobacteriaceae data for statewide risk scoring.
 
@@ -55,6 +66,7 @@ Created a transferable regression modeling framework to assess whether observed 
 **Methods:** Regression modeling
 
 ### Simulated Cancer Relational Data Evaluation
+Code highlight: [Data cleaning & prep](https://github.com/mishahoskins/Portfolio/blob/77a91c5a3381a891c1a56483d8e2160cd995fa4e/External_eval_R_practice.R) | [Visualization](https://github.com/mishahoskins/Portfolio/blob/77a91c5a3381a891c1a56483d8e2160cd995fa4e/External_eval_R_practice.R)
 
 Developed a reproducible end-to-end analysis using sample healthcare data to evaluate cancer incidence, staging, and treatment timelines. Implemented relational joins, analysis, and visualization in **R**, with outputs delivered via **R Markdown**.
 
