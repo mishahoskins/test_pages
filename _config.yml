@@ -5,7 +5,7 @@ theme: jekyll-theme-minimal
 
 baseurl: /test_pages
 
-logo: /test_pages/assets/git_photo_2.png
+logo: /test_pages/git_photo_2.png
 
 
 show_downloads: true
