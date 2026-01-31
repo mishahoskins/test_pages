@@ -1,11 +1,6 @@
 title: Mikhail Hoskins
 description: Data scientist focused on public health and epidemiology, with experience building reproducible analytics workflows and modeling processes in SAS, R, and SQL.
-
 theme: jekyll-theme-minimal
-
 baseurl: /test_pages
-
-logo: /test_pages/git_photo_2.png
-
-
+logo: /git_photo_2.png
 show_downloads: true
