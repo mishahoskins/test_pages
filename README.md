@@ -27,7 +27,7 @@ Healthcare data scientist and infectious disease epidemiologist with 6+ years of
 
 ## Projects
 ### North Carolina Medicare Prescribing Practices 2018-2023
-Code highlight: [Data cleaning & prep](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Medicare_ptD_analysis_new.sas) | [Visualization](https://github.com/mishahoskins/test_pages/blob/3644ba59410818e8c0c58df6b502ccca7ad18cba/Medicare_ptD_tables_29JAN26.pdf)
+Code highlight: [Analysis](https://github.com/mishahoskins/Portfolio/blob/22e05426f16fe639bc0698f3e9baff9ac16adde3/Medicare_ptD_analysis_new.sas#L400-L706) | [Visualization](https://github.com/mishahoskins/test_pages/blob/3644ba59410818e8c0c58df6b502ccca7ad18cba/Medicare_ptD_tables_29JAN26.pdf)
 
 Created a transferable quantile regression model to assess prescribing practices across presriber types and locations in North Carolina from semi structured Medicare data. The model, building and adding to prior publications and implemented using **SQL**, expands on the existing body of work.  
 
