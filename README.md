@@ -36,7 +36,7 @@ Created a transferable quantile regression model to assess prescribing practices
 **Methods:** Quantile regression modeling, risk modeling
 
 ### North Carolina Measles Response Pipleline (_all values simulated_)
-Code highlight: [Mapping](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Measles_metrics_25_26.R)
+Code highlight: [Mapping](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Measles_metrics_25_26.R#L211-L259)
 
 Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
 
