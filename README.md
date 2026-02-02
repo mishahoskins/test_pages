@@ -43,6 +43,7 @@ Built internal **R**-based metrics to clean, structure, and summarize unstructur
 **Tech stack:** R, R Markdown
 
 ### EHR Engineering and Antibiogram Visualization of NHSN Unstructured Antibiotic Susceptibility Data
+Code highlight: [Looping through ALL drug classes](https://github.com/mishahoskins/Portfolio/blob/dfca56eb42aee6bd7f0b1305369dd2080d00f9f0/antibiogram_condensed.sas#L253-L297)
 
 Developed a structured data workflow using unstructured data to analyze antimicrobial resistance by grouping treatments by drug class and susceptibility. Implemented  processing using **SAS** macros and **SQL**, with reproducible outputs designed for downstream analysis in **R** and **Python**.
 
