@@ -1,4 +1,4 @@
-# _Data Science and Engineering Introduction_
+# _Data Science Introduction_
 ## Work in progress -- some extended codes [here](https://github.com/mishahoskins/Portfolio/tree/main)
 
 
@@ -35,10 +35,10 @@ Created a transferable quantile regression model to assess prescribing practices
 
 **Methods:** Quantile regression modeling, risk modeling
 
-### North Carolina Measles Response Pipleline (_all values simulated_)
-Code highlight: [Mapping](https://github.com/mishahoskins/test_pages/blob/8d2a48b86aff59ecbc76251aa3405459c3df27ff/Measles_metrics_25_26.R#L211-L259)
+### North Carolina Measles Response Pipleline (_any values simulated_)
+Code highlight: [Markdown Organization](https://github.com/mishahoskins/test_pages/blob/65aad58d2e5b4da08b832aec4c4a8be4b89d8c68/Measles_metrics_25_26_markdown_output.Rmd#L15-L137)
 
-Built internal **R**-based metrics to clean, structure, and summarize unstructured exposure interview data related to measles activity in North Carolina (Dec 2025–early 2026). Results are presented in a reproducible **R Markdown** HTML report using simulated data.
+Built internal **R**-based script to inform public health response to measles activity in North Carolina from scratch. Results are presented in a visually appealing **R Markdown** HTML report including hover over maps, epidemiological curves, and tables. 
 
 **Tech stack:** R, R Markdown
 
