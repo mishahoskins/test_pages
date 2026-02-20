@@ -24,6 +24,99 @@ knitr::opts_chunk$set(
 source("T:/VPDs/Measles/Cases, Clusters, and Outbreaks/Dec 2025 - Jan 2026 Outbreak/Code/Measles_metrics_25_26.R")
 ```
 
+
+## Epi Curves
+
+### Statewide Trends {.tabset}
+
+#### Cases by week of symptom onset 
+
+```{r}
+epi_curve_plot
+```
+*Data as of 6:00 PM `r format(Sys.Date()-1, "%B %d, %Y")`.*
+
+#### Cumulative cases by week of symptom onset
+
+```{r}
+epi_curve_cum_plot
+```
+*Data as of 6:00 PM `r format(Sys.Date()-1, "%B %d, %Y")`.*
+
+#### Exposed contact interviews by interview date  (cases) 
+
+```{r}
+epi_curve_contacts
+```
+*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
+
+#### Immunization status of cases
+
+```{r}
+epi_curve_vax
+```
+*Data as of 6:00 PM `r format(Sys.Date()-1, "%B %d, %Y")`.*
+
+
+## Geographic Breakdown
+
+### County Level  {.tabset}
+
+#### Cases by county
+
+```{r}
+epi_curve_week_county
+```
+*Data as of 6:00 PM `r format(Sys.Date()-1, "%B %d, %Y")`.*
+
+#### Case heatmap
+
+```{r}
+ggplotly(cases_heatmap_hover, tooltip = "text")
+```
+*Data as of 6:00 PM `r format(Sys.Date()-1, "%B %d, %Y")`.*
+
+#### Case table
+```{r}
+case_table_county_df |>
+  gt() |>
+  cols_label(
+    county_coalesce = "County",
+    n = "Cases",
+    cumulative_count = "Cumulative Cases"
+  ) |>
+  cols_align(
+    align = "right",
+    columns = c(n, cumulative_count)
+  )
+```
+*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
+
+#### Exposed contacts heatmap
+
+```{r}
+ggplotly(contacts_heatmap_hover, tooltip = "text")
+```
+*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
+
+#### Exposed contacts table
+```{r}
+contact_table_county_df |>
+  gt() |>
+  cols_label(
+    responding_county_final = "County",
+    n = "Exposures",
+    cumulative_count = "Cumulative Exposures"
+  ) |>
+  cols_align(
+    align = "right",
+    columns = c(n, cumulative_count)
+  )
+
+```
+*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
+
+
 ## Contact Tracing Summary
 
 ### State and County Tables {.tabset}
@@ -40,64 +133,5 @@ state_sumstats
 
 ```{r}
 county_sumstats
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-
-## Epi Curves
-
-### Statewide Trends {.tabset}
-
-#### Cases by week of symptom onset 
-
-```{r}
-epi_curve_plot
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-#### Cumulative cases by week of symptom onset
-
-```{r}
-epi_curve_cum
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-#### Exposed contact interviews by interview date  (cases) 
-
-```{r}
-epi_curve_contacts
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-#### Immunization status of cases
-
-```{r}
-epi_curve_vax
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-
-## Geographic Breakdown
-
-### County Level  {.tabset}
-
-#### Cases by county
-
-```{r}
-epi_curve_week_county
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-#### Case heatmap
-
-```{r}
-cases_heatmap
-```
-*Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*
-
-#### Exposed contacts heatmap
-
-```{r}
-contacts_heatmap
 ```
 *Data as of 11:00 AM `r format(Sys.Date(), "%B %d, %Y")`.*

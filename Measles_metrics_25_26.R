@@ -2,7 +2,8 @@
 # Author:        Mikhail Hoskins
 # Edits:
 # Date Created:  01/19/2026
-# Date Modified: 01/22/2026
+# Date Modified: 02/12/2026 <-- updated for RMD, combined contact tracing and events
+#
 # Description:   Contact tracing metrics from RedCap, confines to variables we need and produces summary stats by RESPONSE county.
 #                Daily cadence. Pull data ~11:00am
 #
@@ -11,73 +12,541 @@
 # Output:       measles_metrics_raw_R
 # Notes:        Use extract with LABELS, ex: StatewideMeaslesResp_DATA_LABELS_2026-01-19_1535.csv
 #               Ease of use fix: Updated pathways 01/22/2026 to group df's into a list and point to output paths and single .xlsx export.
+#               Revamped RMD output, clean and professional --> use cosmo theme
 #
 #               Annotations are at # (between /* in SAS) to help guide.
 
-# #onetime installs
-# tinytex::install_tinytex(force = TRUE)
-#install.packages("pacman")
+library(dplyr) # data cleaning
+library(tidyr) ##tidy data
+#library(readxl) ##excel
+library(openxlsx) ##excel
+library(lubridate) ##date
+library(ggplot2) ##Plots
+library(janitor)
+library(rvest) ## reading HTML tables
+library(rio) ##data import and export
+#library(skimr) ##data summary
+library(sqldf) ##SQL
+library(gtsummary) ##tables
+library(webshot2) ## save gt tables as images
+#library(kableExtra) ##tables
+library(knitr)
+#library(biostats) ##descriptive stats
+library(tigris) ##maps
+library(stringr) ##strings
+library(gt) ##table to png
+library(MMWRweek) ##MMWR year and week
+library(plotly) #Cool graphs
 
-# load libraries
-#pacman::p_load(dplyr, tidyr, rvest, lubridate, rio, skimr, sqldf, gtsummary, openxlsx, ggplot2, kableExtra, knitr, biostats, tigris, stringr)
-pacman::p_load(
-  dplyr,
-  tidyr,
-  rvest,
-  lubridate,
-  rio,
-  skimr,
-  sqldf,
-  gtsummary,
-  openxlsx,
-  ggplot2,
-  kableExtra,
-  knitr,
-  janitor,
-  biostats,
-  tigris,
-  stringr,
-  gtsummary
+
+## 1. Import ALL data sources
+
+#REDCap contacts
+redcap <- read.csv(
+  "T:\\VPDs\\Measles\\Cases, Clusters, and Outbreaks\\Dec 2025 - Jan 2026 Outbreak\\Data\\StatewideMeaslesResp_DATA_LABELS_2026-02-18_1515.csv",
+  check.names = FALSE
 )
-
-
-# set working directory (if you haven't already) and output path
-setwd(
-  "T:/VPDs/Measles/Cases, Clusters, and Outbreaks/Dec 2025 - Jan 2026 Outbreak"
-)
+# Contacts info output path
 contacttracing <- paste0(
   "./Outputs/contract_tracing_linelist_internal_dashboard_",
   Sys.Date(),
   ".xlsx"
 )
 
+# Now NCEDSS files: call cases by event date, vaccination info, and symptom/clinical info
+base_path = normalizePath(
+  "T:\\VPDs\\Measles\\Cases, Clusters, and Outbreaks\\Dec 2025 - Jan 2026 Outbreak",
+  winslash = "\\",
+  mustWork = FALSE
+)
 
-# Read in data
-# Import from NCEDSS delete excess headers and save as CSV
-# reading in case info
-working_redcap <- read.csv(
-  "T:\\VPDs\\Measles\\Cases, Clusters, and Outbreaks\\Dec 2025 - Jan 2026 Outbreak\\Data\\StatewideMeaslesResp_DATA_LABELS_2026-02-06_1655.csv",
-  check.names = FALSE
-) # Update file name here
+linelist <- html_table(html_nodes(
+  read_html(file.path(
+    base_path,
+    "\\Data\\Linelists\\All_Models_Identified_Cases_and_Contacts_Line_List_by_Event_Create_Date_20260217165119.xls"
+  )),
+  "table"
+))[[1]]
+linelist <- clean_names(linelist)
+
+# vaccine info
+vaccine <- read.csv(file.path(
+  base_path,
+  "\\Data\\Linelists\\Case_Information_Extract_Excel_CSV_20260218102605.xls"
+))
+
+#rash date
+rash <- read.csv(file.path(
+  base_path,
+  "\\Data\\Linelists\\Case_Information_Extract_Excel_CSV_20260218102612.xls"
+))
 
 
-# Confine to only what we need
-#working_redcap_2 <- working_redcap |>
-#select(X...Record.ID, This.field.will.display..Yes..if.the.contact.answered.Yes.to.having.an.MMR.record, Is.the.contact.considered.immune., Is.contact.lost.to.follow.up.,
-#Calculate.most.recent.exposure.date, Quarantine.start.date, Calculated.quarantine.end.date, Specify.Response, Repeat.Instrument, Data.Access.Group, Is.quarantine.needed., Monitoring.Need,
-#Call.outcome, Call.outcome.1, Home.County.., Call.outcome.2, Call.outcome.3, Call.outcome.4, Record.Status..., Complete., Date.of.interview) |>
+## 2. Create the main linelist dataframe
 
-# filter(Repeat.Instrument %in% c(""))
+linelist_vaccine <- linelist |>
+  mutate(
+    age_group = case_when(
+      age < 5 ~ "<5",
+      age >= 5 & age < 18 ~ "5-17",
+      age >= 18 ~ "18+",
+      TRUE ~ "Unknown"
+    ),
 
-# Confine to only what we need
+    # make blanks become NA
+    across(where(is.character), ~ na_if(., "")),
+    earliest_id_date = coalesce(
+      symptom_onset_date,
+      specimen_date,
+      date_initial_report_to_ph,
+      create_date
+    ),
+    hispanic_labels = case_when(
+      hispanic == "Yes" ~ "Hispanic",
+      hispanic == "No" ~ "Non-Hispanic",
+      hispanic == "" ~ "Unknown"
+    ),
+    # NA become Unknown
+    across(
+      c(race, gender, hispanic),
+      ~ case_when(
+        is.na(.) ~ "Unknown",
+        TRUE ~ .
+      )
+    ),
+    county_2 = case_when(
+      event_id == 104297925 ~ "Johnston County", #PO box in Wayne, actually lives in Johnston
+      TRUE ~ county
+    ),
+
+    county_coalesce = coalesce(county_2, reporting_county),
+    Month = month(mdy(earliest_id_date), label = TRUE),
+    week_symptom = floor_date(
+      mdy(earliest_id_date),
+      unit = "week",
+      week_start = 7
+    ) +
+      days(6),
+    day_symptom = floor_date(mdy(earliest_id_date), unit = "day"),
+    Year = year(mdy(earliest_id_date)),
+    id = row_number()
+  ) |>
+  # Join your cleaned up version with the rash and vaccination lists on CaseID adding rash onset date and vaccine doses
+  left_join(
+    rash |>
+      select(CaseID, SS_SKIN_RASH_ONSET_DATE, HOSPITALIZED),
+    by = c("event_id" = "CaseID")
+  ) |>
+  left_join(
+    vaccine |>
+      select(CaseID, VACCINE_NUMBER_DOSES),
+    by = c("event_id" = "CaseID")
+  )
+
+
+# Create tables for external dashboard and addresses
+
+# IMT role person needs to monitor classification in the morning
+linelist_vaccine2 <- linelist_vaccine |>
+  select(
+    event_id,
+    earliest_id_date,
+    symptom_onset_date,
+    date_initial_report_to_ph,
+    day_symptom,
+    week_symptom,
+    Year,
+    classification_status,
+    age_group,
+    race,
+    hispanic_labels,
+    county_coalesce,
+    HOSPITALIZED,
+    VACCINE_NUMBER_DOSES,
+    SS_SKIN_RASH_ONSET_DATE
+  ) |>
+  filter(classification_status %in% c("Confirmed", "Probable"))
+
+
+linelist_vpd <- linelist_vaccine2 |>
+  mutate(id = row_number()) |>
+  select(
+    id,
+    classification_status,
+    age_group,
+    county_coalesce,
+    HOSPITALIZED,
+    day_symptom,
+    VACCINE_NUMBER_DOSES
+  ) |>
+  rename(
+    `Date` = day_symptom,
+    `Classification Status` = classification_status,
+    `Age Group` = age_group,
+    `Hospitalized?` = HOSPITALIZED,
+    `County New` = county_coalesce
+  )
+# export for public dash
+# export(linelist_vpd, file.path(base_path, "\\Outputs\\linelist_vpd.xlsx"))
+
+linelist_vaccine2 |>
+  mutate(county = str_to_title(str_trim(county_coalesce))) |>
+  count(county, name = "n_obs")
+
+epi_prep <- linelist_vaccine2 |>
+  mutate(
+    Cases = case_when(
+      classification_status %in% c('Confirmed', 'Probable') ~ 1,
+      TRUE ~ 0
+    ),
+    count_cases = sum(Cases, na.rm = TRUE),
+    vax_stat = case_when(
+      VACCINE_NUMBER_DOSES %in% c('0') ~ 'No Evidence of Immunty/ Unknown',
+      VACCINE_NUMBER_DOSES %in% c('1') ~ '1 Dose of MMR', ##changed from partial to 1 dose
+      VACCINE_NUMBER_DOSES %in% c('2') ~ 'Evidence of Full Immunity',
+      is.na(VACCINE_NUMBER_DOSES) ~ 'No Evidence of Immunty/ Unknown'
+    ),
+    county = str_remove(county_coalesce, " County$")
+  )
+#
+tabyl(epi_prep, vax_stat)
+
+table_view <- linelist_vpd |>
+  mutate(
+    MMWR = MMWRweek(Date),
+    MMWR_year = MMWR$MMWRyear,
+    MMWR_week = MMWR$MMWRweek,
+    week_start = MMWRweek2Date(MMWR_year, MMWR_week),
+    week_end = week_start + 6
+  )
+##summarize cases by MMWR week
+table_view_clean <- table_view %>%
+  group_by(MMWR_year, MMWR_week, week_end) |>
+  summarise(cases = n(), .groups = "drop") |>
+  arrange(MMWR_year, MMWR_week)
+
+
+# Labels for vax epi curve because no one knows how to read a bar graph
+label_epi <- epi_prep |>
+  group_by(county, vax_stat) |>
+  summarise(Cases = sum(Cases, na.rm = TRUE), .groups = "drop")
+
+epi_curve_vax <- epi_prep |>
+  ggplot(aes(x = county, y = Cases, fill = vax_stat)) +
+
+  geom_col(width = 0.9) +
+  scale_fill_manual(values = c("#3B528B", "#CC79A7", "#E69F00")) +
+
+  geom_text(
+    data = label_epi,
+    aes(label = Cases),
+    position = position_stack(vjust = 0.5),
+    color = "white",
+    size = 4,
+    fontface = "bold"
+  ) +
+
+  theme_minimal(base_family = "Arial") +
+  theme(
+    panel.grid = element_blank(),
+
+    # Legend below the x-axis
+    legend.position = "bottom",
+    legend.direction = "horizontal", # horizontal layout
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 11),
+
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, face = "bold")
+  ) +
+
+  labs(
+    title = "Immune Status of Cases",
+    x = "County of Residence",
+    y = "Case count",
+    fill = "Immune Status"
+  ) +
+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+epi_curve_vax
+
+
+#epi curve of cases by MMWR week
+epi_data <- linelist_vpd %>%
+  mutate(
+    MMWR = MMWRweek(Date),
+    MMWR_year = MMWR$MMWRyear,
+    MMWR_week = MMWR$MMWRweek,
+    week_start = MMWRweek2Date(MMWR_year, MMWR_week),
+    week_end = week_start + 6
+  )
+##summarize cases by MMWR week
+epi_curve <- epi_data %>%
+  group_by(MMWR_year, MMWR_week, week_end) %>%
+  summarise(cases = n(), .groups = "drop") %>%
+  arrange(MMWR_year, MMWR_week)
+
+
+#plot cases added labels again...
+epi_curve_plot <- ggplot(epi_curve, aes(x = week_end, y = cases)) +
+  geom_col(fill = "steelblue") +
+
+  labs(
+    x = "MMWR Week",
+    y = "Case Count"
+  ) +
+  scale_x_date(breaks = epi_curve$week_end, date_labels = "%b %d") +
+
+  geom_text(
+    aes(label = cases),
+    vjust = -0.3,
+    color = "steelblue",
+    size = 6,
+    fontface = "bold"
+  ) +
+
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+    axis.text.y = element_text(size = 14),
+    axis.title.x = element_text(size = 14, ),
+    axis.title.y = element_text(size = 14),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank()
+  )
+
+epi_curve_plot
+
+
+#last day incubation period
+#25 days past rash onset
+linelist_vaccine2 %>%
+  #make sure the exposure date is a Date
+  mutate(SS_SKIN_RASH_ONSET_DATE = mdy(SS_SKIN_RASH_ONSET_DATE)) %>%
+  group_by(county_coalesce) %>%
+  summarise(
+    last_day_incubation = max(SS_SKIN_RASH_ONSET_DATE + days(25), na.rm = TRUE)
+  )
+
+# Map for Cases:
+#Step 1: Count cases per county
+case_counts <- linelist_vaccine2 |>
+  mutate(county = str_to_title(str_trim(county_coalesce))) |>
+  count(county, name = "n_obs")
+# Drop "County" from name (extra step for this map)
+case_counts_new <- case_counts |>
+  mutate(county = str_remove(county, " County$"))
+
+# Had this in a prior map, don't know why, kept it. (explanation here: https://cran.r-project.org/web/packages/tigris/refman/tigris.html, didn't read it)
+options(tigris_use_cache = TRUE)
+#
+#Step 2: Get counties from TIGRIS package
+nc_counties <- counties(
+  state = "NC",
+  cb = TRUE,
+  year = 2023
+) |>
+  mutate(
+    county = str_to_title(NAME)
+  )
+
+
+#Step 3: Merge and make NAs 0, R and NA's vs 0 vs BLANK is annoying
+nc_cases <- nc_counties |>
+  left_join(case_counts_new, by = "county") |>
+  mutate(n_obs = replace_na(n_obs, 0))
+
+
+case_label <- paste0("Number cases by county ", Sys.Date())
+#
+#Step 4: Heat map white for zero then darkish blue for highest counts. borders are black, text color is red, bold, and 4.5 font
+cases_heatmap <- ggplot(nc_cases) +
+  geom_sf(aes(fill = n_obs), color = "white", linewidth = 0.2) +
+
+  geom_sf_text(
+    data = dplyr::filter(nc_cases, n_obs > 0),
+    aes(label = n_obs),
+    color = "black",
+    size = 4.5,
+    fontface = "bold"
+  ) +
+
+  scale_fill_gradient(
+    low = "lightgray",
+    high = "#1f4e79", # matte blue
+    name = "Contacts"
+  ) +
+
+  theme_minimal() +
+
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none"
+  ) + #No legend, we can add it back in but for now we just want to see the county breakdown
+
+  labs(title = case_label, subtitle = "North Carolina")
+
+cases_heatmap
+
+
+# Labels for vax epi curve because no one knows how to read a bar graph
+
+# Epi curves
+
+county_labels <- epi_prep |>
+  mutate(
+    day_symptom = floor_date(day_symptom, "day", week_start = 1) + days(7)
+  ) |>
+  group_by(day_symptom, county_coalesce) |>
+  summarise(Cases = sum(Cases, na.rm = TRUE), .groups = "drop")
+
+epi_curve_week_county <- epi_prep |>
+  mutate(
+    day_symptom = floor_date(day_symptom, "day", week_start = 1) + days(7)
+  ) |>
+  ggplot(aes(x = day_symptom, y = Cases, fill = county_coalesce)) +
+
+  geom_col(width = .9) +
+
+  geom_text(
+    data = county_labels,
+    aes(x = day_symptom, y = Cases, label = Cases, fill = county_coalesce),
+    position = position_stack(vjust = 0.5),
+    color = "white",
+    size = 4,
+    fontface = "bold"
+  ) +
+
+  scale_fill_manual(
+    values = c(
+      'darkorange2',
+      'mediumorchid4',
+      '#f49cd5',
+      'olivedrab4',
+      'darkblue',
+      'slateblue4',
+      'slategray3',
+      'goldenrod3',
+      'darkorange4'
+    )
+  ) +
+
+  scale_x_date(
+    breaks = epi_curve$week_end,
+    date_labels = "%b %d",
+    expand = c(0, 0)
+  ) +
+
+  scale_y_continuous(
+    limits = c(0, 8),
+    breaks = seq(0, 8, by = 2)
+  ) +
+
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "top",
+    legend.direction = "horizontal"
+  ) +
+  labs(
+    title = "Cases by County of Residence",
+    x = "Date symptom onset",
+    y = "Case count",
+    fill = "County of Residence"
+  )
+
+epi_curve_week_county
+
+#Summary county case table
+case_table_county_df <-
+  epi_prep |>
+  count(county_coalesce, name = "n") |>
+  arrange(desc(n)) |>
+  mutate(cumulative_count = cumsum(n))
+
+# Cumulative Table
+case_table_county_df |>
+  gt() |>
+  cols_label(
+    county_coalesce = "County",
+    n = "Cases",
+    cumulative_count = "Cumulative Cases"
+  ) |>
+  cols_align(
+    align = "right",
+    columns = c(n, cumulative_count)
+  )
+
+epi_curve_cum <- table_view_clean |>
+  arrange(week_end) |>
+  mutate(cum_cases = cumsum(cases))
+
+print(epi_curve_cum)
+
+
+#Cumulative epi curve
+epi_curve_cum_plot <- ggplot(epi_curve_cum, aes(x = week_end, y = cum_cases)) +
+  geom_step(
+    linewidth = 1,
+    color = "#1f4e79"
+  ) +
+  theme_minimal() +
+  theme(panel.grid = element_blank()) +
+
+  scale_x_date(
+    breaks = epi_curve$week_end,
+    date_labels = "%b %d",
+    expand = c(0, 0)
+  ) +
+
+  labs(
+    x = "Week of symptom onset",
+    y = "Cumulative cases"
+  )
+epi_curve_cum_plot
+
+
+########### HELPFUL TABLES ###########
+
+#last day incubation period
+#25 days past rash onset
+linelist_vaccine2 %>%
+  #make sure the exposure date is a Date
+  mutate(SS_SKIN_RASH_ONSET_DATE = mdy(SS_SKIN_RASH_ONSET_DATE)) %>%
+  group_by(county_coalesce) %>%
+  summarise(
+    last_day_incubation = max(SS_SKIN_RASH_ONSET_DATE + days(25), na.rm = TRUE)
+  )
+#summary table demographics- age group
+linelist_vaccine2 %>%
+  group_by(age_group) %>%
+  summarise(
+    Cases = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(age_group)
+#
+#summary table demographics- race/ ethnicity
+linelist_vaccine2 %>%
+  group_by(race) %>%
+  summarise(Cases = n())
+
+# ethnicity
+linelist_vaccine2 %>%
+  group_by(hispanic_labels) %>%
+  summarise(Cases = n())
+
+
+##                                                BEGIN EXPOSURE CONTACTS METRICS PT. II                                                       ##
+
 ##clean column names
-working_redcap <- working_redcap %>%
+redcap <- redcap %>%
   janitor::clean_names()
-
-##check column names
-colnames(working_redcap)
-##select columns
-working_redcap_2 <- working_redcap %>%
+###select columns
+redcap_2 <- redcap %>%
   select(
     `record_id`,
     `this_field_will_display_yes_if_the_contact_answered_yes_to_having_an_mmr_record`,
@@ -104,35 +573,8 @@ working_redcap_2 <- working_redcap %>%
     `was_an_mmr_vaccine_administered`
   ) %>%
   filter(repeat_instrument %in% c(""))
-#
-#
-# head(working_redcap2, n=10) ##check columns
-
-#
-# mutate(across(
-#         where(is.character),
-#         ~ na_if(trimws(.x), "")))
-
 # Rename longer vars for simplicity
-#working_redcap_2 <- working_redcap_2 |>
-#rename(text_mmr = This.field.will.display..Yes..if.the.contact.answered.Yes.to.having.an.MMR.record,
-
-#immunity = Is.the.contact.considered.immune.,
-#ltfu = Is.contact.lost.to.follow.up.,
-#calc_recent_exposure_date = Calculate.most.recent.exposure.date,
-#date_quarantine_start = Quarantine.start.date,
-#quarantine = Is.quarantine.needed.,
-#specify_response = Specify.Response,
-#calc_monitor_need = Monitoring.Need,
-#record_status = Record.Status...,
-#quar_end = Calculated.quarantine.end.date,
-#status = Complete.,
-#int_date = Date.of.interview,
-#home_county = Home.County..,
-#Record.ID = X...Record.ID)
-
-# Rename longer vars for simplicity
-working_redcap_2 <- working_redcap_2 %>%
+redcap_2 <- redcap_2 %>%
   rename(
     text_mmr = this_field_will_display_yes_if_the_contact_answered_yes_to_having_an_mmr_record,
     immunity = is_the_contact_considered_immune,
@@ -151,28 +593,14 @@ working_redcap_2 <- working_redcap_2 %>%
     pep1 = was_immunoglobulin_administered,
     pep2 = was_an_mmr_vaccine_administered
   )
-
-# Dates. ugh. <-- This literally switches every time. Is it mdy or ymd, double check every day.
-##check date formats
-head(working_redcap_2$calc_recent_exposure_date)
-head(working_redcap_2$quar_end)
-head(working_redcap_2$int_date)
-
-working_redcap_2$calc_recent_exposure_date <- ymd(
-  working_redcap_2$calc_recent_exposure_date
-)
-working_redcap_2$quar_end <- ymd(working_redcap_2$quar_end)
-working_redcap_2$int_date <- ymd(working_redcap_2$int_date)
+#check dates
+redcap_2$calc_recent_exposure_date <- ymd(redcap_2$calc_recent_exposure_date)
+redcap_2$quar_end <- ymd(redcap_2$quar_end)
+redcap_2$int_date <- ymd(redcap_2$int_date)
 
 
-#
-# #        sniff test for variables if neccessary:
-#
-#         class(working_redcap$Calculated.quarantine.end.date)
-#         levels(working_redcap_2$Calculated.quarantine.end.date)
-
-# SAS SQL but in R for everyone
-response_calcs <- working_redcap_2 |>
+#edit variables
+response_calcs <- redcap_2 %>%
   mutate(
     today_date = today(),
 
@@ -192,22 +620,14 @@ response_calcs <- working_redcap_2 |>
         'Polk County contact investigation December 31, 2025' ~ 'Polk',
       specify_response ==
         'Mecklenburg County contact investigation January 22, 2026' ~ 'Mecklenburg',
+      specify_response ==
+        'Lincoln County contact investigation, Jan 27-Feb 2' ~ 'Lincoln',
       record_id == '469' ~ 'Polk',
       record_id == '470' ~ 'Buncombe',
       TRUE ~ NA_character_
     ),
 
-    # contact interview
-    # interview_stat = if_else(
-    #    call_outcome %in% c('Called - full interview completed', 'Called - partial interview completed') |
-    #   call_outcome_2 %in% c('Called - full interview completed', 'Called - partial interview completed') |
-    #   call_outcome_3 %in% c('Called - full interview completed', 'Called - partial interview completed') | call_outcome_4 %in% c('Called - full interview completed', 'Called - partial interview completed'),
-    #  1, 0),
-    #   interview_stat_new = case_when(
-    #             interview_stat == 1 ~ "Interviewed",
-    #            interview_stat == 0 ~ "No/Unable to Contact"),
-
-    ##contact interview status (Complete, Pending, No/Unable to Contact)
+    ##contact interview status (Complete, Pending, No/Unable to Contact, Refusal added 2/16)
     interview_stat_new = case_when(
       # INTERVIEWED if any full OR partial interview
       call_outcome %in%
@@ -260,20 +680,46 @@ response_calcs <- working_redcap_2 |>
             "Called - voicemail box full",
             "Called - spoke with contact but no interview"
           ) ~ "Pending",
+      #   Refusal (outright refusal indicated ONLY, minimize subjective nature of this ie. "contact was not willing to speak much" =/= "outright refusal" has to be marked outright refusal
+      call_outcome %in%
+        c(
+          "Called - contact outright refused to speak to caller"
+        ) |
+        call_outcome_2 %in%
+          c(
+            "Called - contact outright refused to speak to caller"
+          ) |
+        call_outcome_3 %in%
+          c(
+            "Called - contact outright refused to speak to caller"
+          ) |
+        call_outcome_4 %in%
+          c(
+            "Called - contact outright refused to speak to caller"
+          ) ~ "Refused",
 
       # Otherwise
       TRUE ~ "No/Unable to Contact"
     ),
 
-    # Exposure time
-    exp_time = as.numeric(today_date - calc_recent_exposure_date)
+    # Exposure time: if calc_recent_exposure is missing value will return NA
+    exp_time = as.numeric(today_date - calc_recent_exposure_date),
+    exp_time_new = if_else(
+      exp_time > 21,
+      "Outside Exposure Window",
+      "Inside Exposure Window"
+    )
   ) |>
 
   # Responding county
   mutate(
     response_county_1 = na_if(response_county_1, ""),
     data_access_group = na_if(data_access_group, ""),
-    responding_county = coalesce(response_county_1, data_access_group),
+    responding_county = coalesce(
+      response_county_1,
+      data_access_group,
+      "Unknown"
+    ),
 
     # Polk vs polk... can be use for future misspellings too
     responding_county_final = case_when(
@@ -330,16 +776,9 @@ response_calcs <- working_redcap_2 |>
         coalesce(pep2 == "Yes, within the appropriate time window", FALSE),
       1,
       0
-    ),
-    curr_exposure_pd = if_else(
-      Sys.Date() - calc_recent_exposure_date >= 21,
-      'Not In Exposure Period',
-      'In Exposure Period'
     )
   )
-
-
-# SQL but make it even R-y'er
+##select reporting variables
 linelist_final <- response_calcs |>
   select(
     record_id,
@@ -347,7 +786,6 @@ linelist_final <- response_calcs |>
     responding_county,
     response_county_1,
     week_int,
-    int_date,
     data_access_group,
     specify_response,
 
@@ -363,25 +801,25 @@ linelist_final <- response_calcs |>
     date_quarantine_start,
     quar_end,
     exp_time,
+    exp_time_new,
     active_mon,
     curr_active_mon,
     end_actmon_dt,
-    pep_admin,
-    curr_exposure_pd
+    pep_admin
   )
 
 #Summary stats
-
 county_sumstats <- linelist_final |>
+
+  filter(exp_time_new == "Inside Exposure Window") |>
   select(
     interview_stat_new,
     immunity,
     ltfu_new,
     curr_quarantined,
     curr_active_mon,
-    responding_county_final,
-    pep_admin,
-    curr_exposure_pd
+    exp_time_new,
+    responding_county_final
   ) |>
   tbl_summary(
     by = responding_county_final,
@@ -393,22 +831,21 @@ county_sumstats <- linelist_final |>
       immunity ~ "Immune status",
       curr_quarantined ~ "Currently quarantined",
       curr_active_mon ~ "Currently in active monitoring",
-      pep_admin ~ "PEP adminsitered to date",
-      curr_exposure_pd ~ "Exposure Period"
+      exp_time_new ~ "Current exposure window status"
     )
   ) |>
-  add_overall(last = FALSE, col_label = "Total")
-
+  add_overall(last = TRUE, col_label = "Total")
+county_sumstats
 
 state_sumstats <- linelist_final |>
+  filter(exp_time_new == "Inside Exposure Window") |>
   select(
     interview_stat_new,
     immunity,
     ltfu_new,
     curr_quarantined,
     curr_active_mon,
-    pep_admin,
-    curr_exposure_pd
+    exp_time_new
   ) |>
   tbl_summary(
     missing = "no",
@@ -419,26 +856,12 @@ state_sumstats <- linelist_final |>
       immunity ~ "Immune",
       curr_quarantined ~ "Currently quarantined",
       curr_active_mon ~ "Currently in active monitoring",
-      pep_admin ~ "PEP adminsitered to date",
-      curr_exposure_pd ~ "Exposure Period"
+      exp_time_new ~ "Current exposure window status"
     )
   )
+state_sumstats
 
-# print sum stats (column %'s)
-print(county_sumstats)
-print(state_sumstats)
-
-
-# Make a list for a single export
-combine_metrics <- list(
-  "linelist" = linelist_final,
-  "county" = county_sumstats,
-  "state" = state_sumstats
-)
-
-# Map:
-
-#Step 1: Count cases per county
+#Step 1: Count contacts per county
 county_counts <- linelist_final |>
   mutate(county = str_to_title(str_trim(responding_county_final))) |>
   count(county, name = "n_obs")
@@ -463,18 +886,17 @@ nc_map_data <- nc_counties |>
   mutate(n_obs = replace_na(n_obs, 0))
 
 contacts_label <- paste0(
-  "Number of known exposed contacts by county ",
+  "Cumulative number of known exposed contacts by county ",
   Sys.Date()
 )
-
-#Step 4: Heat map white for zero then darkish blue for highest counts. borders are black, text color is red, bold, and 4.5 font
+#Step 4: Heat map white for zero then darkish blue for highest counts. borders are white, text color is red, bold, and 4.5 font
 contacts_heatmap <- ggplot(nc_map_data) +
-  geom_sf(aes(fill = n_obs), color = "white", linewidth = 0.3) +
+  geom_sf(aes(fill = n_obs), color = "white", linewidth = 0.2) +
 
   geom_sf_text(
     data = dplyr::filter(nc_map_data, n_obs > 0),
     aes(label = n_obs),
-    color = "red",
+    color = "black",
     size = 4.5,
     fontface = "bold"
   ) +
@@ -496,90 +918,181 @@ contacts_heatmap <- ggplot(nc_map_data) +
 
   labs(title = contacts_label, subtitle = "North Carolina")
 
-#Print heatmap
 contacts_heatmap
 
-# send to Outputs folder
-#write.xlsx(x = combine_metrics, file = contacttracing)
+#contacts interviewed daily
+contacts_daily <- redcap_2 %>%
+  filter(!is.na(int_date)) %>% # Make sure interview date exists
+  group_by(date = int_date) %>%
+  summarise(Contacts = n_distinct(record_id), .groups = "drop")
+#cases by notification date
+cases_daily <- linelist_vaccine2 %>%
+  filter(classification_status %in% c("Confirmed", "Probable")) %>%
+  filter(!is.na(earliest_id_date)) %>%
+  group_by(date = earliest_id_date) %>%
+  summarise(Cases = n_distinct(event_id), .groups = "drop")
+#join cases and contacts
 
-# SQL again for grouping of interviews conducted by day
-contact_view <- sqldf(
-  "
-    select 
-        a.int_date,
-        b.day_symptom,
-        coalesce (a.int_date, b.day_symptom) as date_final,
-        CAST(coalesce (a.int_date, b.day_symptom) AS TEXT) as date_char,
-        count (distinct a.record_id) as count_contact,
-        count (distinct b.`Event.ID`) as count_case
-        
-        
-        from linelist_final a full join linelist_vaccine2 b
-            on a.int_date = b.day_symptom
-            group by b.day_symptom , a.int_date
-            order by date_final
-           "
-)
+cases_daily2 <- cases_daily %>%
+  mutate(date = mdy(date))
+contacts_daily2 <- contacts_daily %>%
+  mutate(date = ymd(date))
 
-
-contact_view$date_final <- as.Date(contact_view$date_final)
-
-contacts_epilabel <- paste0(
-  "Number of known exposed contacts interviewed and cases by day ",
-  Sys.Date()
-)
-
-
-# Epi curves
-epi_curve_contacts <- contact_view |>
-  mutate(week_int = floor_date(date_final, "week", week_start = 1) + days(7)) |>
-  ggplot(aes(x = date_final, y = count_contact)) +
-
-  geom_col(aes(fill = "Contacts"), width = 0.7) +
-  geom_col(aes(y = count_case, fill = "Cases"), width = 0.35) +
-
+epi_data_daily <- full_join(contacts_daily2, cases_daily2, by = "date") %>%
+  replace_na(list(Contacts = 0, Cases = 0)) %>%
+  arrange(date)
+#plot
+epi_curve_contacts <- ggplot(epi_data_daily, aes(x = date)) +
+  geom_col(aes(y = Contacts, fill = "Contacts"), width = 0.7, color = "white") +
+  geom_col(aes(y = Cases, fill = "Cases"), width = 0.35, color = "white") +
   scale_fill_manual(
     name = NULL,
-    values = c("Contacts" = "#31739b", "Cases" = "#900d61")
+    values = c(
+      "Contacts" = "#1f4e79",
+      "Cases" = "#FF0000"
+    ),
+    labels = c(
+      "Contacts" = "Contacts by Interview Date",
+      "Cases" = "Cases by Earliest Symptom Onset Date"
+    )
   ) +
-
-  scale_y_continuous(limits = c(0, 50), breaks = seq(0, 50, by = 8)) +
-
   geom_text(
-    aes(label = ifelse(count_contact > 0, count_contact, "")),
+    aes(y = Contacts, label = ifelse(Contacts > 0, Contacts, "")),
     vjust = -0.5,
     size = 3,
-    color = "#31739b"
+    color = "#1f4e79"
   ) +
-
   geom_text(
-    aes(y = count_case, label = ifelse(count_case > 0, count_case, "")),
+    aes(y = Cases, label = ifelse(Cases > 0, Cases, "")),
     vjust = -0.5,
     size = 3,
-    color = "#900d61"
+    color = "#FF0000"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  scale_x_date(
+    breaks = epi_curve$week_end,
+    date_labels = "%b %d",
+    expand = c(0, 0)
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = paste0(
+      "Number of known exposed contacts interviewed and Measles notification date ",
+      Sys.Date()
+    ),
+    subtitle = "North Carolina",
+    x = "Day",
+    y = "Count"
+  )
+epi_curve_contacts
+
+
+#Summary county contacts table (add cumulative column)
+contact_table_county_df <-
+  linelist_final |>
+  filter(responding_county_final != 'Unknown') |>
+  count(responding_county_final, name = "n") |>
+  arrange(desc(n)) |>
+  mutate(cumulative_count = cumsum(n))
+
+# Cumulative Table
+contact_table_county_df |>
+  gt() |>
+  cols_label(
+    responding_county_final = "County",
+    n = "Exposures",
+    cumulative_count = "Cumulative Exposures"
+  ) |>
+  cols_align(
+    align = "right",
+    columns = c(n, cumulative_count)
+  )
+
+
+# adjust height for dashboard, save as image
+ggsave(
+  "T:\\VPDs\\Measles\\Cases, Clusters, and Outbreaks\\Dec 2025 - Jan 2026 Outbreak\\Outputs\\epi_curve_contacts.png",
+  plot = epi_curve_contacts,
+  width = 8,
+  height = 3,
+  dpi = 600
+)
+
+
+# Bonus for markdown: hover over maps
+
+# Hover map contact tracing
+contacts_heatmap_hover <- ggplot(nc_map_data) +
+  geom_sf(
+    aes(
+      fill = n_obs,
+      text = paste0(
+        "County: ",
+        county,
+        "<br>Contacts: ",
+        n_obs
+      )
+    ),
+    color = "white",
+    linewidth = 0.2
+  ) +
+  scale_fill_gradient(
+    low = "lightgray",
+    high = "#1f4e79",
+    name = "Contacts"
   ) +
 
   theme_minimal() +
   theme(
     panel.grid = element_blank(),
-    # Legend below the x-axis
-    legend.position = "bottom",
-    legend.direction = "horizontal",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "right"
+  ) +
+  labs(
+    title = contacts_label,
+    subtitle = "North Carolina"
+  )
+
+ggplotly(contacts_heatmap_hover, tooltip = "text")
+
+
+#Step 4: Hover map cases
+cases_heatmap_hover <- ggplot(nc_cases) +
+  geom_sf(
+    aes(
+      fill = n_obs,
+      text = paste0(
+        "County: ",
+        county,
+        "<br>Cases: ",
+        n_obs
+      )
+    ),
+    color = "white",
+    linewidth = 0.2
   ) +
 
-  labs(x = "Day", y = "Count") +
-  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
-  labs(title = contacts_epilabel, subtitle = "North Carolina")
+  scale_fill_gradient(
+    low = "lightgray",
+    high = "#1f4e79",
+    name = "Cases"
+  ) +
 
-epi_curve_contacts
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "right"
+  ) +
+  labs(
+    title = case_label,
+    subtitle = "North Carolina"
+  )
 
-# fin
-
-#
-# # # Other frequency tables replace select() with what you want to see for data checks, validation, curiosity, etc.
-# sumstats_freqs <- working_redcap_2 |>
-#
-#     select(home_county) |>
-#     tbl_summary()
-#
-# sumstats_freqs
+ggplotly(cases_heatmap_hover, tooltip = "text")
