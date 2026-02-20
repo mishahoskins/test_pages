@@ -68,7 +68,7 @@ Created a transferable regression modeling framework to assess whether observed 
 **Methods:** Regression modeling
 
 ### Simulated Cancer Relational Data Evaluation
-Code highlight: [Load data to server](https://github.com/mishahoskins/Portfolio/blob/ecc7e24bcaa7554a66ef955f04dd271f23117b98/MSSQL_File%20Upload.R#L26-L57) | [Visualization](https://github.com/mishahoskins/Portfolio/blob/77a91c5a3381a891c1a56483d8e2160cd995fa4e/External_eval_R_practice.R#L356-L391)
+Code highlight: [Load data to server](https://github.com/mishahoskins/Portfolio/blob/ecc7e24bcaa7554a66ef955f04dd271f23117b98/MSSQL_File%20Upload.R#L26-L57) | [Visualization & Reshaping](https://github.com/mishahoskins/Portfolio/blob/ea28750395aaa8e69c4b2cb066c9d3bc08f73492/external_eval_python_practice.py#L226-L277)
 
 Developed a reproducible end-to-end analysis using sample healthcare data to evaluate cancer incidence, staging, and treatment timelines. Implemented relational joins, analysis, and visualization in **R**, with outputs delivered via **R Markdown**.
 
