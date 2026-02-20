@@ -1,5 +1,5 @@
 # _Data Science Introduction_
-## Work in progress -- some extended codes [here](https://github.com/mishahoskins/Portfolio/tree/main)
+## All extended codes [here](https://github.com/mishahoskins/Portfolio/tree/main)
 
 
 Mikhail Hoskins
